@@ -1,0 +1,34 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function commerce_ajax_fields_views_data_alter(array &$data) {
+  $data['commerce_order_item']['commerce_ajax_fields_remove_button']['field'] = [
+    'title' => t('Remove button (Ajax!)'),
+    'help' => t('Adds a button for removing (ajax) the order item.'),
+    'id' => 'commerce_ajax_fields_item_remove_button',
+  ];
+  $data['commerce_order_item']['commerce_ajax_fields_edit_quantity']['field'] = [
+    'title' => t('Quantity text field (Ajax!)'),
+    'help' => t('Adds a text field for editing the quantity.'),
+    'id' => 'commerce_ajax_fields_item_edit_quantity',
+  ];
+}
+
+function commerce_ajax_fields_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (FALSE != substr($form_id, strlen('views_form_commerce_cart_form_default_'))) {
+    if (Drupal::routeMatch()->getRouteName() == 'views.ajax') {
+      $path_current = \Drupal::service('path.current');
+      $action_url = Url::fromUserInput($path_current->getPath())->toString();
+      $request = \Drupal::request();
+      $request_all = $request->request->all();
+      unset($request_all['ajax_page_state']);
+      $query = http_build_query($request_all, '', '&');
+      $form['#action'] = $action_url . '?' . $query;
+    }
+  }
+}

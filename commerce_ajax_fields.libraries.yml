@@ -1,0 +1,6 @@
+commerce_ajax_fields:
+  js:
+    js/script.js: {}
+  dependencies:
+    - core/drupal.ajax
+    - core/jquery.form
